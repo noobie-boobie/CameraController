@@ -1,1 +1,5 @@
+pip install opencv-python
+pip install mediapipe
+pip install django
+"pip intall channels" or "python -m pip install -U channels"
 
