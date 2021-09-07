@@ -5,18 +5,24 @@
     <meta charset="UTF-8">
     <title>Draw</title>
 
-    <style>
-        canvas{
-            border: 1px solid black;
-        }
-    </style>
+   <script src="https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.js"></script>
 </head>
 <body>
 
-<h1 id="finger"> 1111 </h1>
-<h1 id="X"> 1111 </h1>
-<h1 id="Y"> 1111 </h1>
-<canvas id = 'canvas'></canvas>
+
+{#<h1 id="finger"> 1111 </h1>#}
+{#<h1 id="X"> 1111 </h1>#}
+{#<h1 id="Y"> 1111 </h1>#}
+
+
+<script>
+    let palmImg = "{% static 'palm.png' %}";
+    let  grabImg = "{% static 'grab.png' %}";
+    let  groundImg = "{% static 'ground.png' %}";
+    let ballImg = "{% static 'bomb.png' %}";
+</script>
 <script src="{% static 'main.js' %}"></script>
 
 </body>

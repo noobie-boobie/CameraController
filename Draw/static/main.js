@@ -1,83 +1,148 @@
-window.addEventListener('load', ()=>{
-        
-    resize(); // Resizes the canvas once the window loads
-    document.addEventListener('mousedown', startPainting);
-    document.addEventListener('mouseup', stopPainting);
-    //document.addEventListener('mousemove', sketch);
-    window.addEventListener('resize', resize);
-});
 
 console.log('Running main.js');
 
 var ws_url = 'ws://' + window.location.host + '/ws/test/';
+var fire = false;
+var drag =false;
 
 var socket = new WebSocket(ws_url);
-var Finger, X, Y;
+var finger, X, Y;
+
+socket.onclose = function (ev){
+    alert('Connection closed');
+}
+
+socket.onerror = function (event) {
+    alert('An error occured with the camera');
+}
+
 socket.onmessage = function (event){
     var data = JSON.parse(event.data);
-    var finger = data.Finger;
+    finger = data.Finger;
     X = data.X;
     Y = data.Y;
-    document.querySelector('#finger').innerHTML =finger;
-    document.querySelector('#X').innerHTML =X;
-    document.querySelector('#Y').innerHTML = Y;
+
 
     if(finger ==='1000') {
-        document.querySelector('#finger').innerHTML = 'FIRST UP ONLY';
-        move(X, Y);
+
+        toDynamic();
+        if(fire) shoot();
+        moveHand(X, Y);
+
+        drag =  handInBall();
+
 
     }
     else if(finger ==='1100') {
-        document.querySelector('#finger').innerHTML = 'FIRST and Second UP';
-        sketch(X, Y);
+
+        if (drag) {
+
+            toStatic();
+            moveHand(X, Y);
+            moveBall(X, Y);
+            fire = true;
+        }
     }
 }
 
-const canvas = document.querySelector('canvas');
-   
+let engine = Matter.Engine.create();
+let render = Matter.Render.create({
+  element: document.body,
+  engine:engine,
+    options:{
+      width: 1200,
+      height: 620,
+      background: '#87CEFA',
+        wireframes: false
+    }
 
-const ctx = canvas.getContext('2d');
-    
+});
 
-function resize(){
-  ctx.canvas.width = window.innerWidth;
-  ctx.canvas.height = window.innerHeight;
+
+let box = Matter.Bodies.rectangle(100,100,10,10,{ isStatic: true});
+box.collisionFilter.mask = 0;
+
+
+let ground = Matter.Bodies.rectangle(0,600,2000,40,{ isStatic: true});
+
+
+let ball = Matter.Bodies.circle(150, 300,20);
+ball.restitution = 0.5;
+
+
+
+let sling = Matter.Constraint.create({
+      pointA: { x: 150, y: 300 },
+      bodyB: ball,
+      stiffness: 0.02
+  });
+
+
+function moveBall(X, Y){
+    Matter.Body.setPosition(ball, {x: 2*X-600, y: 2*Y-100});
 }
 
-
-
-let coord = {x:0 , y:0}; 
-
-let paint = false;
-    
-
-function getPosition(event){
-  coord.x = X;
-  coord.y = Y;
-}
-  
-
-function startPainting(event){
-  paint = true;
-  getPosition(event);
-}
-function stopPainting(){
-  paint = false;
-}
-
-function move(x, y){
+function addImages(){
+    ball.render.sprite.texture = ballImg;
+    ball.render.sprite.xScale = 0.12;
+    ball.render.sprite.yScale = 0.12;
+    box.render.sprite.texture = palmImg;
+    box.render.sprite.xScale = 0.3;
+    box.render.sprite.yScale = 0.3;
+    ground.render.sprite.texture = groundImg;
+    ground.render.sprite.xScale = 3;
 
 }
 
-function sketch(x, y){
-    console.log('Sketch', x, y);
-  ctx.beginPath();
-    
+function handInBall(){
+    var x1 = ball.position.x;
+    var y1 = ball.position.y;
 
+    var x2 = box.position.x;
+    var y2 = box.position.y;
 
-  ctx.fillStyle = 'red';
-  ctx.arc(x,y,10,0, Math.PI*2);
-    ctx.fill();
+    var d = Math.sqrt((x1-x2)**2 + (y1-y2)**2)
+
+    return d <= 30;
+}
+
+function moveHand(X, Y){
+    Matter.Body.setPosition(box, {x: 2*X-600, y: 2*Y-100});
+}
+
+function toStatic(){
+    ball.isStatic = true;
+}
+
+function toDynamic(){
+    ball.isStatic = false;
+}
+
+function shoot(){
+    ball.isStatic = false;
+     fire = false;
+     ball = Matter.Bodies.circle(150, 300,20);
+     ball.restitution = 0.5;
+     ball.render.sprite.texture = ballImg;
+    ball.render.sprite.xScale = 0.12;
+    ball.render.sprite.yScale = 0.12;
+    setTimeout(function (){
+
+         Matter.World.add(engine.world, ball);
+         sling.bodyB = ball;
+
+    }, 100);
 
 
 }
+
+function animate(){
+    requestAnimationFrame(animate);
+
+}
+addImages();
+animate();
+
+Matter.World.add(engine.world,[ground, sling, ball, box]);
+Matter.Runner.run(engine);
+Matter.Render.run(render);

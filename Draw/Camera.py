@@ -16,6 +16,7 @@ Finger = None
 hands = None
 prev = None
 
+
 def initSetup():
     global cap, mp_hands, mp_draw, running, indexDip, indexTip, middleDip, middleTip,ringTip, ringDip
     global pinkyTip, pinkyDip, thumpTip, Finger, hands, prev
@@ -122,6 +123,8 @@ def getFrame():
                 cv.putText(image, Finger[2], (50, 50), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0))
                 cv.putText(image, Finger[3], (80, 50), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0))
                 cv.putText(image, Finger[4], (110, 50), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0))
+                cv.putText(image, 'X: '+ str(indexTip[0]), (20, 100), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0))
+                cv.putText(image, 'Y: '+ str(indexTip[1]), (20, 140), cv.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0))
 
                 # print(pixelCoordinatesLandmark)
                 # print(normalizedLandmark)
@@ -130,6 +133,7 @@ def getFrame():
 
     cv.imshow('Hand', image)
     if cv.waitKey(1) == 27:
+        running = False
         stop()
 
     return  (Finger, indexTip)
@@ -164,7 +168,9 @@ def stop():
 #initSetup()
 
 def getFingersValue():
-
-    return toStr(getFrame())
+    if running:
+        return toStr(getFrame())
+    else:
+        return False
 
 

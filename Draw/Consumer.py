@@ -9,12 +9,21 @@ class FingerConsumer(WebsocketConsumer):
 
     def connect(self):
         self.accept()
+
         initSetup()
         while True:
+            try:
+                d = getFingersValue()
+                if not d:
+                    break
 
-            d = getFingersValue()
-            self.send(json.dumps(d))
+                if d['Finger'] != '':
+
+                    self.send(json.dumps(d))
+            except:
+                continue
             #time.sleep(0)
+        self.close()
 
 
     def receive(self, text_data=None, bytes_data=None):
