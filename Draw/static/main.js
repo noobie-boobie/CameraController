@@ -8,6 +8,26 @@ var drag =false;
 var socket = new WebSocket(ws_url);
 var finger, X, Y;
 
+var gi, bi;
+
+function preloader() {
+    console.log('Preloading Images');
+    gi = new Image();
+    bi = new Image();
+
+    gi.src = groundImg;
+    bi.src = ballImg;
+
+
+}
+
+document.getElementById('ball').src = ballImg;
+console.log(document.images);
+
+socket.onopen = function (event){
+    preloader();
+}
+
 socket.onclose = function (ev){
     alert('Connection closed');
 }
@@ -82,17 +102,17 @@ function moveBall(X, Y){
     Matter.Body.setPosition(ball, {x: 2*X-600, y: 2*Y-100});
 }
 
-function addImages(){
-    ball.render.sprite.texture = ballImg;
-    ball.render.sprite.xScale = 0.12;
-    ball.render.sprite.yScale = 0.12;
-    box.render.sprite.texture = palmImg;
-    box.render.sprite.xScale = 0.3;
-    box.render.sprite.yScale = 0.3;
-    ground.render.sprite.texture = groundImg;
-    ground.render.sprite.xScale = 3;
 
-}
+ball.render.sprite.texture = ballImg;
+ball.render.sprite.xScale = 0.12;
+ball.render.sprite.yScale = 0.12;
+box.render.sprite.texture = palmImg;
+box.render.sprite.xScale = 0.3;
+box.render.sprite.yScale = 0.3;
+ground.render.sprite.texture = groundImg;
+ground.render.sprite.xScale = 3;
+
+
 
 function handInBall(){
     var x1 = ball.position.x;
@@ -140,7 +160,7 @@ function animate(){
     requestAnimationFrame(animate);
 
 }
-addImages();
+
 animate();
 
 Matter.World.add(engine.world,[ground, sling, ball, box]);

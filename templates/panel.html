@@ -10,19 +10,15 @@
      <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.js"></script>
 </head>
 <body>
-
-
-{#<h1 id="finger"> 1111 </h1>#}
-{#<h1 id="X"> 1111 </h1>#}
-{#<h1 id="Y"> 1111 </h1>#}
-
-
 <script>
     let palmImg = "{% static 'palm.png' %}";
     let  grabImg = "{% static 'grab.png' %}";
     let  groundImg = "{% static 'ground.png' %}";
     let ballImg = "{% static 'bomb.png' %}";
 </script>
+<img id = 'ball' width="40px" >
+
+<script src="{% static 'Ball.js' %}"></script>
 <script src="{% static 'main.js' %}"></script>
 
 </body>
