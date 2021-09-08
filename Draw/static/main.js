@@ -8,7 +8,7 @@ var drag =false;
 var socket = new WebSocket(ws_url);
 var finger, X, Y;
 
-var gi, bi;
+var Boxes = [];
 
 function preloader() {
     console.log('Preloading Images');
@@ -21,7 +21,11 @@ function preloader() {
 
 }
 
-document.getElementById('ball').src = ballImg;
+// document.getElementById('ball').src = ballImg;
+// document.getElementById('a').src = groundImg;
+// document.getElementById('b').src = palmImg;
+// document.getElementById('c').src = grabImg;
+
 console.log(document.images);
 
 socket.onopen = function (event){
@@ -82,13 +86,38 @@ let render = Matter.Render.create({
 let box = Matter.Bodies.rectangle(100,100,10,10,{ isStatic: true});
 box.collisionFilter.mask = 0;
 
+let platform = Matter.Bodies.rectangle(700,350,400,40,{ isStatic: true});
+
+Boxes.push(new Box(600, 300));
+Boxes.push(new Box(650, 300));
+Boxes.push(new Box(700, 300));
+
+
+
+Boxes.push(new Box(600, 250));
+Boxes.push(new Box(650, 250));
+
+
+Boxes.push(new Box(600, 200));
+Boxes.push(new Box(650, 300));
+
+Boxes.push(new Box(600, 150));
+Boxes.push(new Box(650, 150));
+
+
+
+for(let i = 0; i < Boxes.length; i++){
+    Boxes[i].setProperties();
+    Boxes[i].mass = 20;
+    Boxes[i].show();
+}
 
 let ground = Matter.Bodies.rectangle(0,600,2000,40,{ isStatic: true});
 
 
 let ball = Matter.Bodies.circle(150, 300,20);
 ball.restitution = 0.5;
-
+ball.mass = 100;
 
 
 let sling = Matter.Constraint.create({
@@ -111,7 +140,8 @@ box.render.sprite.xScale = 0.3;
 box.render.sprite.yScale = 0.3;
 ground.render.sprite.texture = groundImg;
 ground.render.sprite.xScale = 3;
-
+platform.render.sprite.texture = groundImg;
+platform.render.sprite.xScale = 0.7;
 
 
 function handInBall(){
@@ -163,6 +193,6 @@ function animate(){
 
 animate();
 
-Matter.World.add(engine.world,[ground, sling, ball, box]);
+Matter.World.add(engine.world,[ground, sling, ball, box, platform]);
 Matter.Runner.run(engine);
 Matter.Render.run(render);
